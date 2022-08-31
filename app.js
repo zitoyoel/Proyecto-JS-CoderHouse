@@ -1,5 +1,4 @@
-/* En esta nueva entrega se cambia la seleccion del horario del turno, con nuevas validaciones que no dejan sacar turnos en el mismo dia y a la misma hora.
-Tambien se agrega un boton en el nav para consultar los turnos y se muestran de forma dinamica. Se agrega boton que permite eliminar los turnos (se eliminan dinamicamente en el html y en el storage). */
+/* Se implementan las librerias SweerAlert2 y Luxon */
 
 class Turno {
     constructor(nombre, apellido, dni, telefono, hora, fecha) {
@@ -17,10 +16,12 @@ class Turno {
 
 }
 
-
+//Se declara la libreria de luxon para manejar fechas
+const DateTime = luxon.DateTime;
+//se crea un turno vacio en el cual se van a ingresar los turnos
 const turnos = [];
-console.log(turnos);
 verificarStorage();
+
 
 //interactuar con html
 
@@ -142,9 +143,13 @@ window.addEventListener('load', () => {
         const dniValor = dni.value.trim()
         const horaValor = hora.value;
         const telefonoValor = telefono.value.trim();
-        const fechaValor = fecha.value;
-        
-        
+        //se crea variable con el valor sin tratar para poder validar que no se saquen turnos en fechas simultaneas
+        const ValidarTurnosSimultaneos = fecha.value;
+        //se cre variable con la fecha ingresada y se la transforma a un formato de fecha para luego tratarla en la validacion de fecha
+        let fechaValor = fecha.value;
+        fechaValor = DateTime.fromISO(fechaValor); 
+
+
         //validando campo nombre
         if (!nombreValor) {
             validaFalla(nombre, 'Campo vacío')
@@ -181,10 +186,11 @@ window.addEventListener('load', () => {
         if (!fechaValor) {
             validaFalla(fecha, 'Campo vacío')
             return false
-        } else if (new Date(fechaValor) < new Date()) {
+        } else if (fechaValor < DateTime.now()) {
             validaFalla(fecha, 'Ingrese una fecha mayor a la actual')
             return false
-        } else if(new Date(fechaValor).getDay() === 5 || new Date(fechaValor).getDay() === 6){
+        } else if(fechaValor.weekday === 7 || fechaValor.weekday === 6){
+            console.log(fechaValor.weekday);
             validaFalla(fecha, 'No atendemos los fines de semana')
             return false
         } else {
@@ -192,14 +198,14 @@ window.addEventListener('load', () => {
         }
         
         //validando campo hora
-        
         if (!horaValor) {
             validaFalla(hora, 'Campo vacío')
             return false
         }
         else if(horaValor){
             for(let i = 0; i < turnos.length; i++){
-                if(turnos[i].hora === horaValor && turnos[i].fecha === fechaValor){
+                if(turnos[i].hora === horaValor && turnos[i].fecha === ValidarTurnosSimultaneos){
+                    console.log(turnos[i].fecha);
                     validaFalla(hora, 'Turno ocupado, seleccione otro horario')
                     return false
                 }
@@ -228,7 +234,6 @@ const validaOk = (input, msje) => {
 }
 
 //Storage
-
 function guardarStorage(){
     localStorage.setItem("turnos", JSON.stringify(turnos));
 }
