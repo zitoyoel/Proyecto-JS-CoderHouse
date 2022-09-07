@@ -1,4 +1,4 @@
-/* Se implementan las librerias SweerAlert2 y Luxon */
+/* Se implementa el uso de una API que nos muestra la ubicacion del usuario con la temperatura y la fecha actual. Tambien se implementa otra API EmailJS que una vez que el turno se saca correctamente envia automaticamente un mail configurado con todos los datos del turno */
 
 class Turno {
     constructor(nombre, apellido, dni, telefono, hora, fecha) {
@@ -14,7 +14,7 @@ class Turno {
         return `Nombre: ${this.nombre}\nApellido: ${this.apellido}\nDNI: ${this.dni}\nTelefono: ${this.telefono}\nHora: ${this.hora} hs\nFecha: ${this.fecha}`;
     }
 
-}
+};
 
 //Se declara la libreria de luxon para manejar fechas
 const DateTime = luxon.DateTime;
@@ -39,7 +39,7 @@ botonReservar.addEventListener("click", formularioAparece);
 function formularioAparece() {
     let formularioDespliega = document.getElementById("formularioAparece");
     formularioDespliega.style.display = "flex";
-}
+};
 
 //creo variable para despues desplegar el formulario
 let formularioDespliega = document.getElementById("formularioAparece");
@@ -56,16 +56,16 @@ botonCerrar.onclick = () => {
 let botonMostrarTurnos = document.getElementById("misTurnos");
 botonMostrarTurnos.onclick = () => {
     let auxiliar = JSON.parse(localStorage.getItem("turnos"));
-    if(turnos.length === 0 || auxiliar === null){
+    if (turnos.length === 0 || auxiliar === null) {
         let sinTurnos = document.getElementById("infoModal");
         sinTurnos.innerHTML = "NO HAY TURNOS REGISTRADOS";
-        
+
     }
     //si hay turnos registrados, se muestran los turnos de forma dinamica y se pueden eliminar
-    else{
+    else {
         let tabla = document.getElementById("infoModal");
         tabla.innerHTML = "";
-        for(let i = 0; i < auxiliar.length; i++){
+        for (let i = 0; i < auxiliar.length; i++) {
             tabla.innerHTML += `<div class="registrosTabla">
             <h5 class="titulosTurnos">Nombre</h5>
             <p class="datosTurnos">${auxiliar[i].nombre}</p>
@@ -79,63 +79,115 @@ botonMostrarTurnos.onclick = () => {
             <p class="datosTurnos">${auxiliar[i].hora}</p>
             <h5 class="titulosTurnos">Fecha</h5>
             <p class="datosTurnos">${auxiliar[i].fecha}</p>
-            </div>`;    
-        }
-        
-            
-            
-            
+            </div>`;
         }
 
-    } 
-    
+
+
+
+    }
+
+};
+
 //funcionalidad eliminar turnos
 let eliminar = document.getElementById("eliminarTurnos");
 eliminar.onclick = () => {
-guardarStorage();    
-localStorage.clear();
-turnos.splice(0, turnos.length);
+    guardarStorage();
+    localStorage.clear();
+    turnos.splice(0, turnos.length);
+};
+
+//consumir API del clima
+const API_key = 'b8aaf0b6f117dfe2e6584b66b3230c5d';
+
+const spinner = document.getElementById('spinner');
+
+const fetchData = posicion => {
+    const {
+        latitude,
+        longitude
+    } = posicion.coords;
+
+    fetch(`http://api.openweathermap.org/data/2.5/weather?&lang=es&units=metric&lat=${latitude}&lon=${longitude}&appid=${API_key}`)
+        .then(response => response.json())
+        .then(data => enviarData(data))
+        .catch(error => console.error('error:', error))
+        .finally(() => spinner.style.display = 'none');
 }
 
+const enviarData = data => {
+    console.log(data);
+    const datosClima = {
+        ubicacion: `Ciudad: ${data.name}`,
+        temperatura: `Temperatura: ${Math.trunc(data.main.temp)}°C`,
+        fechaActual: `Fecha: ${traerFecha()}`
+    };
+
+    Object.keys(datosClima).forEach(key => {
+        document.getElementById(key).textContent = datosClima[key];
+    })
+};
+
+const traerFecha = () => {
+    let fecha = DateTime.now().toLocaleString(DateTime.DATE_SHORT);
+    return fecha;
+};
+
+const onLoad = () => {
+    navigator.geolocation.getCurrentPosition(fetchData);
+};
 
 //interaccion con furmulario
 window.addEventListener('load', () => {
-    const form = document.getElementById('formulario')
-    const nombre = document.getElementById("inputNombre")
-    const apellido = document.getElementById("inputApellido")
-    const dni = document.getElementById("inputDNI")
-    const fecha = document.getElementById("inputFecha")
-    const hora = document.getElementById("inputHorario")
+    const form = document.getElementById('formulario');
+    const nombre = document.getElementById("inputNombre");
+    const apellido = document.getElementById("inputApellido");
+    const dni = document.getElementById("inputDNI");
+    const fecha = document.getElementById("inputFecha");
+    const hora = document.getElementById("inputHorario");
     const telefono = document.getElementById("inputTelefono");
-    
-    
+    const botonEnviar = document.getElementById("button");
+
+
+
     form.addEventListener('submit', (e) => {
         e.preventDefault()
-        if(validaCampos() === true){
-            
+        if (validaCampos() === true) {
+
+
             let turno = new Turno(nombre.value, apellido.value, dni.value, telefono.value, hora.value, fecha.value);
             turno.datosUsuario();
             console.log(`Los datos del turno son:\n${turno.datosUsuario()}`);
-            
-            Swal.fire({
-                title: 'DETALLE DE SU TURNO',
-                html: `<p>Nombre: ${turno.nombre}</p><p>Apellido: ${turno.apellido}</p><p>DNI: ${turno.dni}</p><p>Telefono: ${turno.telefono}</p><p>Hora: ${turno.hora}</p><p>Fecha: ${turno.fecha}</p>`,
-                icon: 'success',
-                confirmButtonText: 'Cerrar'
-            })
-            
+
+            //Utilizar EmailJS para enviar un correo con los datos del turno
+            botonEnviar.value = "Enviando..."
+            const serviceID = 'default_service';
+            const templateID = 'template_gmgejk7';
+
+            emailjs.sendForm(serviceID, templateID, '#formulario')
+                .then(() => {
+                    botonEnviar.value = 'RESERVAR TURNO';
+                    Swal.fire({
+                        title: 'DETALLE DE SU TURNO',
+                        html: `<p>Nombre: ${turno.nombre}</p><p>Apellido: ${turno.apellido}</p><p>DNI: ${turno.dni}</p><p>Telefono: ${turno.telefono}</p><p>Hora: ${turno.hora}</p><p>Fecha: ${turno.fecha}</p>`,
+                        icon: 'success',
+                        confirmButtonText: 'Cerrar'
+                    })
+                }, (err) => {
+                    botonEnviar.value = 'RESERVAR TURNO';
+                    alert(JSON.stringify(err));
+                });
+
+
+
             turnos.push(turno);
             guardarStorage();
             console.log(`El usuario saco ${turnos.length} turnos`);
             formulario.reset();
-            formularioDespliega.style.display = "none";
-            esconderBoton.style.display = "block";
-
-            
-        } 
+        }
     })
-    
-    
+
+    //validacion de campos
     const validaCampos = () => {
         //capturar los valores ingresados por el usuario
         const nombreValor = nombre.value.trim()
@@ -147,7 +199,7 @@ window.addEventListener('load', () => {
         const ValidarTurnosSimultaneos = fecha.value;
         //se cre variable con la fecha ingresada y se la transforma a un formato de fecha para luego tratarla en la validacion de fecha
         let fechaValor = fecha.value;
-        fechaValor = DateTime.fromISO(fechaValor); 
+        fechaValor = DateTime.fromISO(fechaValor);
 
 
         //validando campo nombre
@@ -157,7 +209,7 @@ window.addEventListener('load', () => {
         } else {
             validaOk(nombre)
         }
-        
+
         //validando campo apellido
         if (!apellidoValor) {
             validaFalla(apellido, 'Campo vacío')
@@ -165,7 +217,7 @@ window.addEventListener('load', () => {
         } else {
             validaOk(apellido)
         }
-        
+
         //validando campo DNI
         if (!dniValor) {
             validaFalla(dni, 'Campo vacío')
@@ -173,7 +225,7 @@ window.addEventListener('load', () => {
         } else {
             validaOk(dni)
         }
-        
+
         //validando campo telefono
         if (!telefonoValor) {
             validaFalla(telefono, 'Campo vacío')
@@ -181,7 +233,7 @@ window.addEventListener('load', () => {
         } else {
             validaOk(telefono)
         }
-        
+
         //validando campo fecha
         if (!fechaValor) {
             validaFalla(fecha, 'Campo vacío')
@@ -189,62 +241,63 @@ window.addEventListener('load', () => {
         } else if (fechaValor < DateTime.now()) {
             validaFalla(fecha, 'Ingrese una fecha mayor a la actual')
             return false
-        } else if(fechaValor.weekday === 7 || fechaValor.weekday === 6){
+        } else if (fechaValor.weekday === 7 || fechaValor.weekday === 6) {
             console.log(fechaValor.weekday);
             validaFalla(fecha, 'No atendemos los fines de semana')
             return false
         } else {
             validaOk(fecha)
         }
-        
+
         //validando campo hora
         if (!horaValor) {
             validaFalla(hora, 'Campo vacío')
             return false
-        }
-        else if(horaValor){
-            for(let i = 0; i < turnos.length; i++){
-                if(turnos[i].hora === horaValor && turnos[i].fecha === ValidarTurnosSimultaneos){
-                    console.log(turnos[i].fecha);
+        } else if (horaValor) {
+            for (let i = 0; i < turnos.length; i++) {
+                if (turnos[i].hora === horaValor && turnos[i].fecha === ValidarTurnosSimultaneos) {
                     validaFalla(hora, 'Turno ocupado, seleccione otro horario')
                     return false
                 }
-    
+
             }
         } else {
             validaOk(hora)
         }
-        
-        
-        return true;
-        
-    }
-})
 
+
+        return true;
+
+    }
+});
+
+//funciones para validar campos
 const validaFalla = (input, msje) => {
-    const formControl = input.parentElement
+
+    let formControl = input.parentElement
     const aviso = formControl.querySelector('p')
     aviso.innerText = msje
-    
+    formControl.setAttribute('id', 'prueba')
     formControl.className = 'form-control falla'
-}
+};
+
 const validaOk = (input, msje) => {
-    const formControl = input.parentElement
+    let formControl = input.parentElement
     formControl.className = 'form-control ok'
-}
+};
 
 //Storage
-function guardarStorage(){
+function guardarStorage() {
     localStorage.setItem("turnos", JSON.stringify(turnos));
-}
+};
 
-function verificarStorage(){
+function verificarStorage() {
     let auxiliar = JSON.parse(localStorage.getItem("turnos"));
 
-    if(auxiliar){
-        for(let i = 0; i < auxiliar.length; i++){
+    if (auxiliar) {
+        for (let i = 0; i < auxiliar.length; i++) {
             turnos.push(auxiliar[i]);
         }
     }
-    
-}
+
+};

@@ -1,17 +1,18 @@
 /* Body */
-* ::before, ::after {
+* ::before,
+::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-.nav-link{
+.nav-link {
   border: 1px solid #fd7e14;
   border-radius: 5px;
   margin: 10px;
 }
 
-.banner{
+.banner {
   width: 100%;
   height: 400px;
   overflow: hidden;
@@ -19,54 +20,55 @@
 
 }
 
-.banner img{
+.banner img {
   width: 100%;
   height: 100%;
 }
 
-.banner h2{
+.banner h2 {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: black;
   font-size: 3rem;
-  text-shadow: 3px 0px 2px rgba(0,0,0,0.46);
+  text-shadow: 3px 0px 2px rgba(0, 0, 0, 0.46);
 }
 
-.rounded-lg{
+.rounded-lg {
   transition: transform .2s;
 }
+
 .rounded-lg:hover {
   transform: scale(1.07);
-   
+
 }
 
-.card-img-top{
+.card-img-top {
   width: 200px;
   height: 300px;
 }
 
-.card-body{
+.card-body {
   background-color: #fd7e14;
   ;
 }
 
-div .card{
-  border:1.8px black;
-  -webkit-box-shadow: 0px 7px 15px 1px rgba(0,0,0,0.71); 
-  box-shadow: 0px 7px 15px 1px rgba(0,0,0,0.71);
+div .card {
+  border: 1.8px black;
+  -webkit-box-shadow: 0px 7px 15px 1px rgba(0, 0, 0, 0.71);
+  box-shadow: 0px 7px 15px 1px rgba(0, 0, 0, 0.71);
 }
 
-.cartas{
+.cartas {
   margin-bottom: 130px;
 }
 
-.turno{
-  margin-top: 100px; 
+.turno {
+  margin-top: 100px;
 }
 
-footer{
+footer {
   margin-top: 150px;
 }
 
@@ -81,9 +83,9 @@ button {
   transition: filter 250ms;
   user-select: none;
   touch-action: manipulation;
- }
- 
- .shadow {
+}
+
+.shadow {
   position: absolute;
   top: 0;
   left: 0;
@@ -93,28 +95,21 @@ button {
   background: hsl(0deg 0% 0% / 0.25);
   will-change: transform;
   transform: translateY(2px);
-  transition: transform
-     600ms
-     cubic-bezier(.3, .7, .4, 1);
- }
- 
- .edge {
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.edge {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   border-radius: 12px;
-  background: linear-gradient(
-     to left,
-     #fc7303
-     #fd7e14
-     #fd7e14
-     #fd7e14
-   );
- }
- 
- .front {
+  background: linear-gradient(to left,
+      #fc7303 #fd7e14 #fd7e14 #fd7e14);
+}
+
+.front {
   display: flex;
   position: relative;
   padding: 12px 27px;
@@ -124,60 +119,54 @@ button {
   background: #fd7e14;
   will-change: transform;
   transform: translateY(-4px);
-  transition: transform
-     600ms
-     cubic-bezier(.3, .7, .4, 1);
- }
- 
- button:hover {
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+button:hover {
   filter: brightness(110%);
- }
- 
- button:hover .front {
+}
+
+button:hover .front {
   transform: translateY(-6px);
-  transition: transform
-     250ms
-     cubic-bezier(.3, .7, .4, 1.5);
- }
- 
- button:active .front {
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+button:active .front {
   transform: translateY(-2px);
   transition: transform 34ms;
- }
- 
- button:hover .shadow {
+}
+
+button:hover .shadow {
   transform: translateY(4px);
-  transition: transform
-     250ms
-     cubic-bezier(.3, .7, .4, 1.5);
- }
- 
- button:active .shadow {
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+button:active .shadow {
   transform: translateY(1px);
   transition: transform 34ms;
- }
- 
- button:focus:not(:focus-visible) {
+}
+
+button:focus:not(:focus-visible) {
   outline: none;
- }
+}
 
 /*footer*/
 
-div .contacto{
+div .contacto {
   text-align-last: center;
 }
 
 /* turnos.html*/
 
 
-div.formulario{
+div.formulario {
   display: none;
   width: 80%;
   border: solid orange;
   margin-top: 20px;
   margin-bottom: 80px;
   padding: 40px;
-  -webkit-box-shadow: 2px 5px 15px 1px #000000; 
+  -webkit-box-shadow: 2px 5px 15px 1px #000000;
   box-shadow: 2px 5px 15px 1px #000000;
 }
 
@@ -187,12 +176,17 @@ div.formulario{
 
 .form-control p {
   visibility: hidden;
-  
+
 }
 
 .form-control.falla p {
   visibility: visible;
-  color:red
+  color: red;
+}
+
+.form-control.falla input {
+  border: 0.1px solid;
+  border-color: red;
 }
 
 .form-control.ok input {
@@ -200,17 +194,17 @@ div.formulario{
   border-color: #08ffc8;
 }
 
-button.swal2-confirm.swal2-styled{
+button.swal2-confirm.swal2-styled {
   color: white;
   background-color: red;
 }
 
-button.btn-close{
+button.btn-close {
   border: 1px solid black;
   background-color: red;
 }
 
-.cerrarBoton{
+.cerrarBoton {
   display: flex;
   justify-content: end;
 }
@@ -218,7 +212,7 @@ button.btn-close{
 /* tabla turno */
 
 
-.registrosTabla{
+.registrosTabla {
   border: 2px solid black;
   text-align: center;
   margin-bottom: 5px;
@@ -227,12 +221,50 @@ button.btn-close{
 }
 
 
-.titulosTurnos{
+.titulosTurnos {
   margin: 1px;
 }
 
-.datosTurnos{
+.datosTurnos {
   margin-bottom: 2px;
 }
 
 
+/* boton enviar turno*/
+.btnEnviarTurno {
+  background-color: #fd7e14;
+  border-radius: 5px;
+  padding: 10px;
+
+}
+
+.btnEnviarTurno:hover {
+  filter: brightness(110%);
+}
+
+.btnEnviarTurno:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+/* App clima */
+/* From uiverse.io by @adamgiebl */
+.cardClima {
+  margin: 0px auto;
+  width: 190px;
+  height: 200px;
+  /* background: rgb(240, 223, 198); */
+  background-color: #fd7e14;
+  border-radius: 50px;
+  box-shadow: rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset, rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset, rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+}
+
+.ubicacionClima {
+  margin-left: 15px;
+  margin-right: 8px;
+}
+
+/*spinners*/
+#spinner {
+  margin: 0px auto;
+}
