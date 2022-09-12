@@ -1,4 +1,4 @@
-/* Se implementa el uso de una API que nos muestra la ubicacion del usuario con la temperatura y la fecha actual. Tambien se implementa otra API EmailJS que una vez que el turno se saca correctamente envia automaticamente un mail configurado con todos los datos del turno */
+/* Se implementan funcionalidades en "mis turnos" se pueden eliminar turnos individualmente. Se suman mas interacciones con el usuario*/
 
 class Turno {
     constructor(nombre, apellido, dni, telefono, hora, fecha) {
@@ -32,13 +32,14 @@ esconderBoton.onclick = () => {
     esconderBoton.style.display = "none";
 };
 
-//al hacer click en sacar turno, aparece el formulario
+//al hacer click en reservar, aparece el formulario
 let botonReservar = document.getElementById("botonTurno");
 botonReservar.addEventListener("click", formularioAparece);
 
 function formularioAparece() {
     let formularioDespliega = document.getElementById("formularioAparece");
     formularioDespliega.style.display = "flex";
+
 };
 
 //creo variable para despues desplegar el formulario
@@ -79,23 +80,100 @@ botonMostrarTurnos.onclick = () => {
             <p class="datosTurnos">${auxiliar[i].hora}</p>
             <h5 class="titulosTurnos">Fecha</h5>
             <p class="datosTurnos">${auxiliar[i].fecha}</p>
+            <button type="button" id="eliminoIndividual" class="btn btn-outline-danger mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
+</svg>
+              </button>
             </div>`;
         }
-
-
-
-
     }
 
+    //funcionalidad eliminar turno individual
+    let btnEliminarIndividual = document.getElementsByClassName("btn btn-outline-danger mb-2");
+
+    for (let i = 0; i < btnEliminarIndividual.length; i++) {
+        btnEliminarIndividual[i].onclick = () => {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger mx-2'
+                },
+                buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+                title: 'Estas seguro?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Eliminar!',
+                cancelButtonText: 'Cancelar!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    let auxiliar = JSON.parse(localStorage.getItem("turnos"));
+                    auxiliar.splice(i, 1);
+                    localStorage.setItem("turnos", JSON.stringify(auxiliar));
+
+                    swalWithBootstrapButtons.fire(
+                        'Eliminado!',
+                        'Su turno fue eliminado.',
+                        'success'
+                    ).then(() => {
+                        location.reload();
+
+                    })
+                } else if (
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                        'Cancelado',
+                        'El turno no se elimino',
+                        'error'
+                    )
+                }
+            })
+
+        }
+    }
 };
 
 //funcionalidad eliminar turnos
 let eliminar = document.getElementById("eliminarTurnos");
 eliminar.onclick = () => {
-    guardarStorage();
-    localStorage.clear();
-    turnos.splice(0, turnos.length);
+    if (turnos.length === 0) {
+        Swal.fire(
+            'No hay turnos registrados',
+            '',
+            'info'
+        )
+    } else {
+        Swal.fire({
+            title: 'Estas seguro?',
+            text: "Se eliminaran todos los turnos!",
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, eliminar todos!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                guardarStorage();
+                localStorage.clear();
+                turnos.splice(0, turnos.length);
+                Swal.fire(
+                    'Eliminados!',
+                    'Sus turnos fueron eliminados.',
+                    'success'
+                )
+            }
+        })
+
+    }
 };
+
 
 //consumir API del clima
 const API_key = 'b8aaf0b6f117dfe2e6584b66b3230c5d';
@@ -116,7 +194,6 @@ const fetchData = posicion => {
 }
 
 const enviarData = data => {
-    console.log(data);
     const datosClima = {
         ubicacion: `Ciudad: ${data.name}`,
         temperatura: `Temperatura: ${Math.trunc(data.main.temp)}°C`,
@@ -178,8 +255,6 @@ window.addEventListener('load', () => {
                     alert(JSON.stringify(err));
                 });
 
-
-
             turnos.push(turno);
             guardarStorage();
             console.log(`El usuario saco ${turnos.length} turnos`);
@@ -199,8 +274,6 @@ window.addEventListener('load', () => {
         const ValidarTurnosSimultaneos = fecha.value;
         //se cre variable con la fecha ingresada y se la transforma a un formato de fecha para luego tratarla en la validacion de fecha
         let fechaValor = fecha.value;
-        fechaValor = DateTime.fromISO(fechaValor);
-
 
         //validando campo nombre
         if (!nombreValor) {
@@ -235,14 +308,13 @@ window.addEventListener('load', () => {
         }
 
         //validando campo fecha
-        if (!fechaValor) {
+        if (fechaValor.length === 0) {
             validaFalla(fecha, 'Campo vacío')
             return false
-        } else if (fechaValor < DateTime.now()) {
+        } else if (DateTime.fromISO(fechaValor) < DateTime.now()) {
             validaFalla(fecha, 'Ingrese una fecha mayor a la actual')
             return false
         } else if (fechaValor.weekday === 7 || fechaValor.weekday === 6) {
-            console.log(fechaValor.weekday);
             validaFalla(fecha, 'No atendemos los fines de semana')
             return false
         } else {
@@ -259,7 +331,6 @@ window.addEventListener('load', () => {
                     validaFalla(hora, 'Turno ocupado, seleccione otro horario')
                     return false
                 }
-
             }
         } else {
             validaOk(hora)
@@ -274,7 +345,7 @@ window.addEventListener('load', () => {
 //funciones para validar campos
 const validaFalla = (input, msje) => {
 
-    let formControl = input.parentElement
+    let formControl = input.parentElement;
     const aviso = formControl.querySelector('p')
     aviso.innerText = msje
     formControl.setAttribute('id', 'prueba')
