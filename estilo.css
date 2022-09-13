@@ -217,9 +217,18 @@ div.formulario {
   border-color: red;
 }
 
+.form-control.falla select {
+  border: 0.1px solid;
+  border-color: red;
+}
+
 .form-control.ok input {
   border: 0.1px solid;
   border-color: #08ffc8;
+}
+
+.col-12 p {
+  display: none;
 }
 
 button.swal2-confirm.swal2-styled {
