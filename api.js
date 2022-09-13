@@ -9,7 +9,7 @@ const fetchData = posicion => {
         longitude
     } = posicion.coords;
 
-    fetch(`http://api.openweathermap.org/data/2.5/weather?&lang=es&units=metric&lat=${latitude}&lon=${longitude}&appid=${API_key}`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?&lang=es&units=metric&lat=${latitude}&lon=${longitude}&appid=${API_key}`)
         .then(response => response.json())
         .then(data => enviarData(data))
         .catch(error => console.error('error:', error))
