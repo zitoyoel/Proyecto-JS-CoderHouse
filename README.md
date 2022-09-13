@@ -1,6 +1,6 @@
-# Proyecto CoderHouse JS :tw-1f680:
+# Proyecto CoderHouse JS :rocket:
 
-### Descripción de la app :tw-1f4bb:
+### Descripción de la app :man_technologist:
 
 Se crea con el objetivo de realizar una app que le permita al usuario sacar un turno para asistir a una oficina.
 La app es totalmente responsive.
