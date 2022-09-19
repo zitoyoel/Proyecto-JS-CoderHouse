@@ -81,6 +81,7 @@ window.addEventListener('load', () => {
         const ValidarTurnosSimultaneos = fecha.value;
         //se cre variable con la fecha ingresada y se la transforma a un formato de fecha para luego tratarla en la validacion de fecha
         let fechaValor = fecha.value;
+        fechaValor = DateTime.fromISO(fechaValor);
 
         //validando campo nombre
         if (!nombreValor) {
